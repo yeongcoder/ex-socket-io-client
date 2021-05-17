@@ -15,14 +15,7 @@ socket.on('connect', () => {
     console.log('socket connect');
 
     console.log("emit!");
-    socket.emit('call', 'math.add', {a:2, b: 3}, (err, res) => {
-        if(err){
-            console.error(err);
-        } else {    
-            console.log(res);
-        }
-    });
-    socket.emit('call', 'greeter.hello', {}, (err, res) => {
+    socket.emit('call', 'add', {a:2, b: 3}, (err, res) => {
         if(err){
             console.error(err);
         } else {    
@@ -39,5 +32,8 @@ socket.on('error', () => {
 });
 socket.on('hello', (args) => {
     console.log("hello: ", args);
+})
+socket.on('afterCall', (args) => {
+    console.log("afterCall: ", args);
 })
 
