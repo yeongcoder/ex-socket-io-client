@@ -1,3 +1,3 @@
 # ex-socket-io-client
 
-this socket.io-clietn is based on moleculer-io socket server
+this socket.io-client is based on moleculer-io socket server
