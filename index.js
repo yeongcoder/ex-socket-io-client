@@ -1,39 +1,63 @@
 const io = require('socket.io-client')
 
-const socket = io('http://localhost:3000'
-// , {
-//     path: "/socket.io/ws/message", // https://socket.io/docs/v3/client-api/index.html
-//     transports: [ /*'polling',*/ 'websocket'], // https://socket.io/docs/v3/server-api/#new-Server-httpServer-options (https://socket.io/docs/v3/client-initialization/#transports)
-//     allowUpgrades: true,
-//     autoConnect: false
-// }
-)
+const socket = io('http://localhost:3973');
 
-socket.connect();
+let room = null;
+
+process.stdin.resume();
+process.stdin.setEncoding('utf-8');
+process.stdin.on("data", chunk => {
+
+    if(chunk.startsWith("@join")){
+
+        let commands = chunk.split(":");
+
+        room = commands[1];
+
+        socket.emit("call", "join", { room: room }, (err, res) => {
+            if(err){
+                console.error(err);
+            } else {    
+                console.log("join success")
+            }
+        });
+
+    } else if(chunk.startsWith("@leave")){
+        
+        socket.emit("call", "leave", { room: room }, (err, res) => {
+            if(err){
+                console.error(err);
+            } else {    
+                console.log("leave success")
+            }
+            room = null;
+        })
+
+    } else {
+
+        socket.emit("call", "chat", { text: chunk, room: room }, (err, res) => {
+            if(err){
+                console.error(err);
+            } else {    
+                //
+            }
+        })
+
+    }
+})
 
 socket.on('connect', () => {
     console.log('socket connect');
-
-    console.log("emit!");
-    socket.emit('call', 'add', {a:2, b: 3}, (err, res) => {
-        if(err){
-            console.error(err);
-        } else {    
-            console.log(res);
-        }
-    });
 });
-
 socket.on('disconnect', () => {
     console.log('socket disconnect');
 });
-socket.on('error', () => {
-    console.log('socket error');
+socket.on('error', arg => {
+    console.log('socket error: ', arg);
 });
-socket.on('hello', (args) => {
-    console.log("hello: ", args);
+socket.on('noti', (arg) => {
+    console.log('noti: ', arg);
 })
-socket.on('afterCall', (args) => {
-    console.log("afterCall: ", args);
+socket.on('chat', (arg) => {
+    console.log(arg);
 })
-
